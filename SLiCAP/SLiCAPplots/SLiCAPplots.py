@@ -194,16 +194,16 @@ class axis(object):
         Scale factor (*str*) for the y-scale; e.g. M for 1E6. Defaults to ''.
         """
         return
-    
+
     def makeTraceDict(self):
         """
         Returns a dict with data of all the traces on the axis.
 
         :return: dictionary with key-value pairs:
-            
+
                  - key: *str* label of the trace
                  - value: *SLiCAPplots.trace* trace object
-                 
+
         :rtype: dict
         """
         traceDict = {}
@@ -357,7 +357,7 @@ class figure(object):
             plt.show()
         plt.close(fig)
         return
-        
+
 def defaultsPlot():
     """
     Applies default settings for plots.
@@ -459,7 +459,7 @@ def plotSweep(fileName, title, results, sweepStart, sweepStop, sweepNum, sweepVa
 
     :param xUnits: Units of the x axis variable.
     :type xUnits: str
-    
+
     :param xLim: Limits for the x-axis scale: [<xmin>, <xmax>]
     :type xLim: list
 
@@ -475,7 +475,7 @@ def plotSweep(fileName, title, results, sweepStart, sweepStop, sweepNum, sweepVa
 
     :param yUnits: Units of the y axis variable.
     :type yUnits: str
-    
+
     :param yLim: Limits for the y-axis scale: [<ymin>, <ymax>]
     :type yLim: list
 
@@ -1125,17 +1125,17 @@ def plot(fileName, title, axisType, plotData, xName = '', xScale = '', xUnits = 
     :type axisType: str
 
     :param plotData: dictionary with key-value pairs or dictionary with traces
-    
+
                      - key: *str* label for the trace
-                     - value: 
-                         
+                     - value:
+
                        #. *list* [<xData>, <yData>]
-                     
+
                           - xData: *list*: x values
                           - yData: *list*: y values
-                          
+
                        #. *SLiCAPplots.trace* object
-                       
+
     :type plotData: dict, SLiCAPplots.trace
 
     :param xName: Name of the variable to be plotted along the x axis. Defaults to ''.
@@ -1146,7 +1146,7 @@ def plot(fileName, title, axisType, plotData, xName = '', xScale = '', xUnits = 
 
     :param xUnits: Units of the x axis variable. Defaults to ''.
     :type xUnits: str
-    
+
     :param xLim: Limits for the x-axis scale: [<xmin>, <xmax>]
     :type xLim: list
 
@@ -1158,7 +1158,7 @@ def plot(fileName, title, axisType, plotData, xName = '', xScale = '', xUnits = 
 
     :param yUnits: Units of the y axis variable. Defaults to ''.
     :type yUnits: str
-    
+
     :param yLim: Limits for the y-axis scale: [<ymin>, <ymax>]
     :type yLim: list
 
@@ -1271,7 +1271,7 @@ def stepParams(results, xVar, yVar, sVar, sweepList):
     if errors == 0 and results.step:
         if results.stepMethod.lower() == 'lin':
             p = np.linspace(results.stepStart, results.stepStop, num = results.stepNum)
-        elif xMethod.lower() == 'log':
+        elif results.stepMethod.lower() == 'log':
             p = np.geomspace(results.stepStart, results.stepStop, num = results.stepNum)
     if errors == 0:
         substitutions = {}
@@ -1313,47 +1313,47 @@ def stepParams(results, xVar, yVar, sVar, sweepList):
                 x = sp.lambdify(sp.Symbol(sVar), g)
                 xValues = x(sweepList)
             else:
-                xValues = sweepList  
+                xValues = sweepList
     return (xValues, yValues)
 
 def traces2fig(traceDict, figObject, axis = [0, 0]):
     """
     Adds traces generated from another application to an existing figure.
-    
+
     :param traceDict: Dictionary with key-value pairs:
-        
+
              - key: *str*: label of the trace
              - value: *SLiCAPplots.trace* trace object
-             
+
     :type traceDict: dict
-    
+
     :param figObject: figure object to which the traces must be added
     :type figObject: SLiCAPplots.figure
-    
+
     :param axis: List with x position and y position of the axis to which the
                  traces must be added. Defaults to [0, 0]
     :type axis: list
-    
+
     :return: Updated figure object
     :rtype: SLiCAPplots.figure
     """
     for label in list(traceDict.keys()):
-        figObject.axes[axis[0]][axis[0]].traces.append(traceDict[label])    
+        figObject.axes[axis[0]][axis[0]].traces.append(traceDict[label])
     return figObject
 
 def LTspiceData2Traces(txtFile):
     """
     Generates a dictionary with traces (key = label, value = trace object) from
     LTspice plot data (saved as .txt file).
-    
+
     :param txtFile: Name of the text file stored in the ini.txtPath directory
     :type txtFile: str
-    
+
     :return: Dictionary with key-value pairs:
-        
+
              - key: *str*: label of the trace
              - value: *SLiCAPplots.trace* trace object
-             
+
     :rtype: dict
     """
     try:
@@ -1406,22 +1406,22 @@ def csv2traces(csvFile):
     """
     Generates a dictionary with traces (key = label, value = trace object) from
     data from a csv file. The CSV file should have the following structure:
-        
-    x0_label, y0_label, x1_label, y1_label, ... 
+
+    x0_label, y0_label, x1_label, y1_label, ...
     x0_0    , y0_0    , x1_0    , y1_0    , ...
     x0_1    , y0_1    , x1_1    , y1_1    , ...
     ...     , ...     , ...     , ...     , ...
 
     The traces will be named  with their y label.
-    
+
     :param csvFile: name of the csv file (in the ini.csvPath directory)
     :type csvFile: str
-    
+
     :return: dictionary with key-value pairs:
-        
+
              - key: *str*: label of the trace
              - value: *SLiCAPplots.trace* trace object
-             
+
     :rtype: dict
     """
     try:
