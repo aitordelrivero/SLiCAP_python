@@ -395,7 +395,7 @@ def defaultsPlot():
             for tick in fig.axes[i].yaxis.get_major_ticks():
                 tick.label.set_fontsize(ini.plotFontSize)
 
-def plotSweep(fileName, title, results, sweepStart, sweepStop, sweepNum, sweepVar = 'auto', sweepScale = '', xVar = 'auto', xScale = '', xUnits = '', xLim = [], yLim = [], axisType = 'auto', funcType = 'auto', yVar = 'auto', yScale = '', yUnits = '', noiseSources = None, show = False):
+def plotSweep(fileName, title, results, sweepStart, sweepStop, sweepNum, sweepVar = 'auto', sweepScale = '', xVar = 'auto', xScale = '', xUnits = '', xLim = [], yLim = [], axisType = 'auto', funcType = 'auto', yVar = 'auto', yScale = '', yUnits = '', noiseSources = None, show = False, flipX = False, flipY = False):
     """
     Plots a function by sweeping one variable and optionally stepping another.
 
@@ -489,6 +489,12 @@ def plotSweep(fileName, title, results, sweepStart, sweepStop, sweepNum, sweepVa
     :param show: If 'True' the plot will be shown in the workspace.
     :type show: bool
 
+    :param flipX: If 'True' and funcType=param, it multiplies by -1 all elements in the X axis.
+    :type show: bool
+
+    :param flipY: If 'True' and funcType=param, it multiplies by -1 all elements in the Y axis.
+    :type show: bool
+
     :return: fig
     :rtype: SLiCAPplots.figure
     """
@@ -568,8 +574,15 @@ def plotSweep(fileName, title, results, sweepStart, sweepStop, sweepNum, sweepVa
     # Create the axis labels
     # For parameter plots: the parameter names with units and scalefactors
     if funcType == 'param':
-        ax.xLabel = '$' + sp.latex(sp.Symbol(xVar)) + '$ [' + xScale + xUnits + ']'
-        ax.yLabel = '$' + sp.latex(sp.Symbol(yVar)) + '$ [' + yScale + yUnits + ']'
+        if flipX:
+            ax.xLabel = '$-'+ sp.latex(sp.Symbol(xVar)) + '$ [' + xScale + xUnits + ']'
+        else:
+            ax.xLabel = '$'+ sp.latex(sp.Symbol(xVar)) + '$ [' + xScale + xUnits + ']'
+        if flipY:
+            ax.yLabel = '$-'+ sp.latex(sp.Symbol(yVar)) + '$ [' + yScale + yUnits + ']'
+        else:
+            ax.yLabel = '$'+ sp.latex(sp.Symbol(yVar)) + '$ [' + yScale + yUnits + ']'
+
     # For time frequency plots we use frequency 'Hz' or 'rad/s' along the x-axis
     elif result.dataType in freqTypes:
         if result.dataType == 'noise':
@@ -618,10 +631,17 @@ def plotSweep(fileName, title, results, sweepStart, sweepStop, sweepNum, sweepVa
     # Other simulation results are simply ignored (plots would become messy).
     if funcType == 'param':
         xData, yData = stepParams(result, xVar, yVar, sweepVar, x)
+        if flipY:
+            keysY = sorted(list(yData.keys()))
+            for i in range(len(keysY)):
+                yData[keysY[i]]=((-yData[keysY[i]]))
         if type(xData) == dict:
             keys = sorted(list(xData.keys()))
             for i in range(len(keys)):
-                newTrace = trace([xData[keys[i]], yData[keys[i]]])
+                if flipX:
+                    newTrace = trace([-xData[keys[i]], yData[keys[i]]])
+                else:
+                    newTrace = trace([-xData[keys[i]], yData[keys[i]]])
                 newTrace.label = '$%s$ = %8.1e'%(sp.latex(result.stepVar), result.stepList[i])
                 newTrace.color = ini.defaultColors[colNum % numColors]
                 colNum += 1
@@ -1402,7 +1422,7 @@ def LTspiceData2Traces(txtFile):
     traceDict[label] = newTrace
     return traceDict
 
-def csv2traces(csvFile):
+def csv2traces(csvFile, absx = False, logx = False, absy = False, logy = False):
     """
     Generates a dictionary with traces (key = label, value = trace object) from
     data from a csv file. The CSV file should have the following structure:
@@ -1416,6 +1436,18 @@ def csv2traces(csvFile):
 
     :param csvFile: name of the csv file (in the ini.csvPath directory)
     :type csvFile: str
+
+    :param absx: if 'True', it applies the absolute (abs) function to the indpendent variable data (xData)
+    :type bool
+
+    :param logx: if 'True', it applies the logarithm in base 10 (log10) function to the independent variable data (xData)
+    :type bool
+
+    :param absy: if 'True', it applies the absolute (abs) function to the dependent variable data (yData)
+    :type bool
+
+    :param logy: if 'True', it applies the logarithm in base 10 (log10) function to the dependent variable data (yData)
+    :type bool
 
     :return: dictionary with key-value pairs:
 
@@ -1447,7 +1479,21 @@ def csv2traces(csvFile):
         else:
             for j in range(len(labels)):
                 xData = eval(data[2*j])
+                if absx:
+                    xData = abs(xData)
+                if logx:
+                    try:
+                        xData = np.log10(xData)
+                    except:
+                        print("Could not calculate the log10 of the xData of:", ini.csvPath + csvFile)
                 yData = eval(data[2*j+1])
+                if absy:
+                    yData = abs(yData)
+                if logy:
+                    try:
+                        yData = np.log10(yData)
+                    except:
+                        print("Could not calculate the log10 of the yData of:", ini.csvPath + csvFile)
                 traceDict[labels[j]].xData.append(xData)
                 traceDict[labels[j]].yData.append(yData)
     for label in labels:
