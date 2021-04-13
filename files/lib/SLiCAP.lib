@@ -611,6 +611,98 @@ I2 ext comm I value=0 noise={2*q*IG}           ; gate shot noise
 + f_ell   = {g_m^2*R_N*KF_N18/(4*k*T*W*L*C_OX_N18)}
 .ends
 
+.subckt NM18_noise_onlyblue ext comm int ID={ID} IG={IG} W={W} L={L}
+* intrinsic noise sources, gate resistance should be added externally
+* CMOS18 N device: copy and modify this model for other devices
+I1 0 1 I value=0 noise={4*k*T/R_N*(1+(f_ell/f)^AF_N18)} ; channel noise current
+H1 ext int 1 10 {0}                        ; equivalent-input voltage noise
+F1 ext comm 10 0 {s/2/pi/f_T}                  ; gate-induced noise
+I2 ext comm I value=0 noise={0}           ; gate shot noise
+.param
+* device equations MKV model saturated region
++ R_N     = {(1+IC)/(1/2 + 2/3*IC)/N_s_N18/g_m}
++ IC_CRIT = {1/((4*N_s_N18*U_T)*(Theta_N18+1/L/E_CRIT_N18))^2}
++ g_m     = {ID/(N_s_N18*U_T*sqrt(IC*(1+IC/IC_CRIT)+0.5*sqrt(IC*(1+IC/IC_CRIT))+1))}
++ c_gs    = {2/3*W*L*C_OX_N18 + CGSO_N18*W}
++ c_dg    = {CGSO_N18*W}
++ c_gb    = {CGBO_N18*2*L+(N_s_N18-1)/N_s_N18*C_OX_N18*W*L/3}
++ c_db    = {CJB0_N18*W*LDS_N18}
++ f_T     = {g_m/2/pi/c_iss}
++ c_iss   = {c_gs+c_dg+c_gb}
++ IC_i    = {ID*L/W/I_0_N18} ; Correction for initial estimate of inversion coefficient
++ IC      = {IC_i*(1+IC_i/4/IC_CRIT)} ; Inversion coefficient corrected for short-channel effects
++ f_ell   = {g_m^2*R_N*KF_N18/(4*k*T*W*L*C_OX_N18)}
+.ends
+
+.subckt NM18_noise_onlywhite ext comm int ID={ID} IG={IG} W={W} L={L}
+* intrinsic noise sources, gate resistance should be added externally
+* CMOS18 N device: copy and modify this model for other devices
+I1 0 1 I value=0 noise={4*k*T/R_N} ; channel noise current
+H1 ext int 1 10 {1/g_m}                        ; equivalent-input voltage noise
+F1 ext comm 10 0 {0}                  ; gate-induced noise
+I2 ext comm I value=0 noise={0}           ; gate shot noise
+.param
+* device equations MKV model saturated region
++ R_N     = {(1+IC)/(1/2 + 2/3*IC)/N_s_N18/g_m}
++ IC_CRIT = {1/((4*N_s_N18*U_T)*(Theta_N18+1/L/E_CRIT_N18))^2}
++ g_m     = {ID/(N_s_N18*U_T*sqrt(IC*(1+IC/IC_CRIT)+0.5*sqrt(IC*(1+IC/IC_CRIT))+1))}
++ c_gs    = {2/3*W*L*C_OX_N18 + CGSO_N18*W}
++ c_dg    = {CGSO_N18*W}
++ c_gb    = {CGBO_N18*2*L+(N_s_N18-1)/N_s_N18*C_OX_N18*W*L/3}
++ c_db    = {CJB0_N18*W*LDS_N18}
++ f_T     = {g_m/2/pi/c_iss}
++ c_iss   = {c_gs+c_dg+c_gb}
++ IC_i    = {ID*L/W/I_0_N18} ; Correction for initial estimate of inversion coefficient
++ IC      = {IC_i*(1+IC_i/4/IC_CRIT)} ; Inversion coefficient corrected for short-channel effects
++ f_ell   = {0}
+.ends
+
+.subckt NM18_noise_onlypink ext comm int ID={ID} IG={IG} W={W} L={L}
+* intrinsic noise sources, gate resistance should be added externally
+* CMOS18 N device: copy and modify this model for other devices
+I1 0 1 I value=0 noise={4*k*T/R_N*((f_ell/f)^AF_N18)} ; channel noise current
+H1 ext int 1 10 {1/g_m}                        ; equivalent-input voltage noise
+F1 ext comm 10 0 {0}                  ; gate-induced noise
+I2 ext comm I value=0 noise={0}           ; gate shot noise
+.param
+* device equations MKV model saturated region
++ R_N     = {(1+IC)/(1/2 + 2/3*IC)/N_s_N18/g_m}
++ IC_CRIT = {1/((4*N_s_N18*U_T)*(Theta_N18+1/L/E_CRIT_N18))^2}
++ g_m     = {ID/(N_s_N18*U_T*sqrt(IC*(1+IC/IC_CRIT)+0.5*sqrt(IC*(1+IC/IC_CRIT))+1))}
++ c_gs    = {2/3*W*L*C_OX_N18 + CGSO_N18*W}
++ c_dg    = {CGSO_N18*W}
++ c_gb    = {CGBO_N18*2*L+(N_s_N18-1)/N_s_N18*C_OX_N18*W*L/3}
++ c_db    = {CJB0_N18*W*LDS_N18}
++ f_T     = {g_m/2/pi/c_iss}
++ c_iss   = {c_gs+c_dg+c_gb}
++ IC_i    = {ID*L/W/I_0_N18} ; Correction for initial estimate of inversion coefficient
++ IC      = {IC_i*(1+IC_i/4/IC_CRIT)} ; Inversion coefficient corrected for short-channel effects
++ f_ell   = {g_m^2*R_N*KF_N18/(4*k*T*W*L*C_OX_N18)}
+.ends
+
+.subckt NM18_noise_onlyshot ext comm int ID={ID} IG={IG} W={W} L={L}
+* intrinsic noise sources, gate resistance should be added externally
+* CMOS18 N device: copy and modify this model for other devices
+I1 0 1 I value=0 noise={0} ; channel noise current
+H1 ext int 1 10 {0}                        ; equivalent-input voltage noise
+F1 ext comm 10 0 {0}                  ; gate-induced noise
+I2 ext comm I value=0 noise={2*q*IG}           ; gate shot noise
+.param
+* device equations MKV model saturated region
++ R_N     = {(1+IC)/(1/2 + 2/3*IC)/N_s_N18/g_m}
++ IC_CRIT = {1/((4*N_s_N18*U_T)*(Theta_N18+1/L/E_CRIT_N18))^2}
++ g_m     = {ID/(N_s_N18*U_T*sqrt(IC*(1+IC/IC_CRIT)+0.5*sqrt(IC*(1+IC/IC_CRIT))+1))}
++ c_gs    = {2/3*W*L*C_OX_N18 + CGSO_N18*W}
++ c_dg    = {CGSO_N18*W}
++ c_gb    = {CGBO_N18*2*L+(N_s_N18-1)/N_s_N18*C_OX_N18*W*L/3}
++ c_db    = {CJB0_N18*W*LDS_N18}
++ f_T     = {g_m/2/pi/c_iss}
++ c_iss   = {c_gs+c_dg+c_gb}
++ IC_i    = {ID*L/W/I_0_N18} ; Correction for initial estimate of inversion coefficient
++ IC      = {IC_i*(1+IC_i/4/IC_CRIT)} ; Inversion coefficient corrected for short-channel effects
++ f_ell   = {0}
+.ends
+
 .subckt PM18_noise ext comm int ID={ID} IG={IG} W={W} L={L}
 * intrinsic noise sources, gate resistance should be added externally
 * CMOS18 P device: copy and modify this model for other devices
@@ -633,6 +725,103 @@ I2 ext comm I value=0 noise={-2*q*IG}          ; gate shot noise
 + IC_i    = {-ID*L/W/I_0_P18} ; Initial estimate of inversion coefficient
 + IC      = {IC_i*(1+IC_i/4/IC_CRIT)} ; Inversion coefficient corrected for short-channel effects
 + f_ell   = {g_m^2*R_N*KF_P18/(4*k*T*W*L*C_OX_P18)}
+.ends
+
+.subckt PM18_noise_onlyblue ext comm int ID={ID} IG={IG} W={W} L={L}
+* intrinsic noise sources, gate resistance should be added externally
+* CMOS18 P device: copy and modify this model for other devices
+* IG and ID should be negative
+* this subckt only considers the induced gate noise (blue noise)
+I1 0 1 I value=0 noise={4*k*T/R_N*(1+(f_ell/f)^AF_P18)} ; channel noise current
+H1 ext int 1 10 {0}                        ; equivalent-input voltage noise
+F1 ext comm 10 0 {s/2/pi/f_T}                  ; gate-induced input current noise
+I2 ext comm I value=0 noise={0}          ; gate shot noise
+.param
+* device equations MKV model saturated region
++ R_N     = {(1+IC)/(1/2 + 2/3*IC)/N_s_P18/g_m}
++ IC_CRIT = {1/((4*N_s_P18*U_T)*(Theta_P18+1/L/E_CRIT_P18))^2}
++ g_m     = {-ID/(N_s_P18*U_T*sqrt(IC*(1+IC/IC_CRIT)+0.5*sqrt(IC*(1+IC/IC_CRIT))+1))}
++ c_gs    = {2/3*W*L*C_OX_P18 + CGSO_P18*W}
++ c_dg    = {CGSO_P18*W}
++ c_gb    = {CGBO_P18*2*L+(N_s_P18-1)/N_s_P18*C_OX_P18*W*L/3}
++ c_db    = {CJB0_P18*W*LDS_P18}
++ f_T     = {g_m/2/pi/c_iss}
++ c_iss   = {c_gs+c_dg+c_gb}
++ IC_i    = {-ID*L/W/I_0_P18} ; Initial estimate of inversion coefficient
++ IC      = {IC_i*(1+IC_i/4/IC_CRIT)} ; Inversion coefficient corrected for short-channel effects
++ f_ell   = {g_m^2*R_N*KF_P18/(4*k*T*W*L*C_OX_P18)}
+.ends
+
+.subckt PM18_noise_onlywhite ext comm int ID={ID} IG={IG} W={W} L={L}
+* intrinsic noise sources, gate resistance should be added externally
+* CMOS18 P device: copy and modify this model for other devices
+* IG and ID should be negative
+I1 0 1 I value=0 noise={4*k*T/R_N} ; channel noise current
+H1 ext int 1 10 {1/g_m}                        ; equivalent-input voltage noise
+F1 ext comm 10 0 {0}                  ; gate-induced input current noise
+I2 ext comm I value=0 noise={0}          ; gate shot noise
+.param
+* device equations MKV model saturated region
++ R_N     = {(1+IC)/(1/2 + 2/3*IC)/N_s_P18/g_m}
++ IC_CRIT = {1/((4*N_s_P18*U_T)*(Theta_P18+1/L/E_CRIT_P18))^2}
++ g_m     = {-ID/(N_s_P18*U_T*sqrt(IC*(1+IC/IC_CRIT)+0.5*sqrt(IC*(1+IC/IC_CRIT))+1))}
++ c_gs    = {2/3*W*L*C_OX_P18 + CGSO_P18*W}
++ c_dg    = {CGSO_P18*W}
++ c_gb    = {CGBO_P18*2*L+(N_s_P18-1)/N_s_P18*C_OX_P18*W*L/3}
++ c_db    = {CJB0_P18*W*LDS_P18}
++ f_T     = {g_m/2/pi/c_iss}
++ c_iss   = {c_gs+c_dg+c_gb}
++ IC_i    = {-ID*L/W/I_0_P18} ; Initial estimate of inversion coefficient
++ IC      = {IC_i*(1+IC_i/4/IC_CRIT)} ; Inversion coefficient corrected for short-channel effects
++ f_ell   = {0}
+.ends
+
+.subckt PM18_noise_onlypink ext comm int ID={ID} IG={IG} W={W} L={L}
+* intrinsic noise sources, gate resistance should be added externally
+* CMOS18 P device: copy and modify this model for other devices
+* IG and ID should be negative
+I1 0 1 I value=0 noise={4*k*T/R_N*((f_ell/f)^AF_P18)} ; channel noise current
+H1 ext int 1 10 {1/g_m}                        ; equivalent-input voltage noise
+F1 ext comm 10 0 {0}                  ; gate-induced input current noise
+I2 ext comm I value=0 noise={0}          ; gate shot noise
+.param
+* device equations MKV model saturated region
++ R_N     = {(1+IC)/(1/2 + 2/3*IC)/N_s_P18/g_m}
++ IC_CRIT = {1/((4*N_s_P18*U_T)*(Theta_P18+1/L/E_CRIT_P18))^2}
++ g_m     = {-ID/(N_s_P18*U_T*sqrt(IC*(1+IC/IC_CRIT)+0.5*sqrt(IC*(1+IC/IC_CRIT))+1))}
++ c_gs    = {2/3*W*L*C_OX_P18 + CGSO_P18*W}
++ c_dg    = {CGSO_P18*W}
++ c_gb    = {CGBO_P18*2*L+(N_s_P18-1)/N_s_P18*C_OX_P18*W*L/3}
++ c_db    = {CJB0_P18*W*LDS_P18}
++ f_T     = {g_m/2/pi/c_iss}
++ c_iss   = {c_gs+c_dg+c_gb}
++ IC_i    = {-ID*L/W/I_0_P18} ; Initial estimate of inversion coefficient
++ IC      = {IC_i*(1+IC_i/4/IC_CRIT)} ; Inversion coefficient corrected for short-channel effects
++ f_ell   = {g_m^2*R_N*KF_P18/(4*k*T*W*L*C_OX_P18)}
+.ends
+
+.subckt PM18_noise_onlyshot ext comm int ID={ID} IG={IG} W={W} L={L}
+* intrinsic noise sources, gate resistance should be added externally
+* CMOS18 P device: copy and modify this model for other devices
+* IG and ID should be negative
+I1 0 1 I value=0 noise={0} ; channel noise current
+H1 ext int 1 10 {0}                        ; equivalent-input voltage noise
+F1 ext comm 10 0 {0}                  ; gate-induced input current noise
+I2 ext comm I value=0 noise={0}          ; gate shot noise
+.param
+* device equations MKV model saturated region
++ R_N     = {(1+IC)/(1/2 + 2/3*IC)/N_s_P18/g_m}
++ IC_CRIT = {1/((4*N_s_P18*U_T)*(Theta_P18+1/L/E_CRIT_P18))^2}
++ g_m     = {-ID/(N_s_P18*U_T*sqrt(IC*(1+IC/IC_CRIT)+0.5*sqrt(IC*(1+IC/IC_CRIT))+1))}
++ c_gs    = {2/3*W*L*C_OX_P18 + CGSO_P18*W}
++ c_dg    = {CGSO_P18*W}
++ c_gb    = {CGBO_P18*2*L+(N_s_P18-1)/N_s_P18*C_OX_P18*W*L/3}
++ c_db    = {CJB0_P18*W*LDS_P18}
++ f_T     = {g_m/2/pi/c_iss}
++ c_iss   = {c_gs+c_dg+c_gb}
++ IC_i    = {-ID*L/W/I_0_P18} ; Initial estimate of inversion coefficient
++ IC      = {IC_i*(1+IC_i/4/IC_CRIT)} ; Inversion coefficient corrected for short-channel effects
++ f_ell   = {0}
 .ends
 
 .subckt J_noise ext comm int ID={ID} IG={IG} W={W} L={L}
